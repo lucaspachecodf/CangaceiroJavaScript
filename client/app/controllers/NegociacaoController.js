@@ -17,13 +17,28 @@ class NegociacaoController {
             new MensagemView('#mensagemView'),
             'texto'
         );
+
+        this._service = new NegociacaoService();
     }
 
     adiciona(event) {
-        event.preventDefault();
-        this._negociacoes.adiciona(this._criarNegociacao());
-        this._mensagem.texto = 'Negociação adicionada com sucesso';
-        this._limparFormalario();
+        try {
+            event.preventDefault();
+            this._negociacoes.adiciona(this._criarNegociacao());
+            this._mensagem.texto = 'Negociação adicionada com sucesso';
+            this._limparFormalario();
+        }
+        catch (error) {
+            this._mensagem.texto = error.message;
+
+            if (error instanceof DataInvalidaException) {
+                this._mensagem.texto = error.message;
+            } else {
+                //	mensagem genérica para qualquer problema que possa acontecer
+                this._mensagem.texto = 'Um erro	não	esperado aconteceu. Entre em contato com o suporte';
+            }
+
+        }
     }
 
     _limparFormalario() {
@@ -43,5 +58,14 @@ class NegociacaoController {
     apaga() {
         this._negociacoes.esvazia();
         this._mensagem.texto = 'Negociações	apagadas com sucesso';
+    }
+
+    importaNegociacoes() {
+
+        this._service.obterNegociacoesDoPeriodo().then(negociacoes => {
+            negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+            this._mensagem.texto = 'Negociações importadas com sucesso';
+
+        }).catch(err => this._mensagem.texto = err);
     }
 }
