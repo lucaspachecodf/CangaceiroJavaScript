@@ -48,7 +48,7 @@ api.listaRetrasada = function(req, res) {
 };
 
 api.cadastraNegociacao = function(req, res) {
-
+debugger
    console.log(req.body);
    req.body.data = new Date(req.body.data.replace(/-/g,'/'));
    negociacoes.push(req.body);
